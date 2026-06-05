@@ -102,4 +102,3 @@ scripts/generate-china-locations.cjs
 - 照片数据保存在本地浏览器存储中，不会自动上传到网络。
 - 地图底图资源依赖在线地图服务，首次打开或网络较慢时可能需要等待加载。
 - Windows 安装包和 macOS 压缩包建议放在 GitHub Releases 中，不建议直接提交进源码仓库。
-
