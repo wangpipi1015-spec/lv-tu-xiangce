@@ -21,7 +21,6 @@
 从 Releases 页面下载：
 
 - `侣途相册 Setup 0.1.0.exe`：安装版，适合日常使用。
-- `侣途相册 0.1.0.exe`：便携版，双击即可运行。
 
 ### macOS
 
@@ -57,7 +56,7 @@ npm install
 npm start
 ```
 
-打包 Windows 安装版和便携版：
+打包 Windows 安装版：
 
 ```bash
 npm run build:win -- --publish=never
