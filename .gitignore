@@ -1,0 +1,23 @@
+.DS_Store
+
+# Dependencies
+node_modules/
+
+# Build caches
+.build-cache/
+.npm-cache/
+
+# Packaged apps and installers
+dist/
+
+# Downloaded package archives
+*.tgz
+
+# Local generated scratch files
+/china-locations.js
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

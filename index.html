@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>侣途相册</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/maplibre-gl@5.12.0/dist/maplibre-gl.css"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside id="detailPanel" class="detail-panel" aria-label="添加和编辑照片" hidden>
+        <header class="detail-head">
+          <button id="backHome" class="ghost-button" type="button">返回</button>
+          <div>
+            <p class="kicker">照片管理</p>
+            <h1 id="detailTitle">添加照片</h1>
+          </div>
+          <button id="batchManage" class="ghost-button" type="button" hidden>管理</button>
+        </header>
+
+            <div id="importProgress" class="import-progress" hidden>
+              <div class="import-progress-head">
+                <span id="importProgressText">准备导入</span>
+                <span id="importProgressCount">0/0</span>
+              </div>
+              <div class="import-progress-track">
+                <span id="importProgressBar"></span>
+              </div>
+            </div>
+
+            <section id="cityAlbumPanel" class="city-album-panel" aria-label="城市相册" hidden>
+              <div class="section-heading">
+                <h2 id="cityAlbumTitle">城市相册</h2>
+                <span id="cityAlbumMeta"></span>
+              </div>
+              <div id="batchToolbar" class="batch-toolbar" hidden>
+                <span id="batchSelectedCount">已选择 0 张</span>
+                <button id="batchSelectAll" class="ghost-button" type="button">全选</button>
+                <select id="batchMoveTarget" aria-label="移动到相册"></select>
+                <button id="batchMove" class="ghost-button" type="button">移动</button>
+                <button id="batchDelete" class="ghost-button danger" type="button">删除</button>
+              </div>
+              <div id="cityAlbumGallery" class="gallery city-photo-gallery"></div>
+            </section>
+
+            <section class="upload-panel" aria-label="导入照片">
+              <label class="drop-zone" for="photoInput">
+                <input id="photoInput" type="file" accept="image/*" multiple />
+                <span class="drop-icon" aria-hidden="true">↑</span>
+                <strong>导入照片</strong>
+                <small>可一次选择多张照片；自动读取 GPS，没有位置时可手动补充</small>
+              </label>
+            </section>
+
+            <section class="stats" aria-label="相册数据">
+              <div>
+                <strong id="tripCount">0</strong>
+                <span>地点</span>
+              </div>
+              <div>
+                <strong id="photoCount">0</strong>
+                <span>照片</span>
+              </div>
+              <div>
+                <strong id="memoryCount">0</strong>
+                <span>故事</span>
+              </div>
+            </section>
+
+            <section class="editor" aria-label="照片地点编辑">
+              <div class="section-heading">
+                <h2>照片信息</h2>
+                <div class="photo-heading-actions">
+                  <button id="setCoverPhoto" class="ghost-button cover-editor-button" type="button">设为封面</button>
+                  <button id="deletePhoto" class="ghost-button danger" type="button">删除</button>
+                </div>
+              </div>
+              <form id="photoForm">
+                <label>
+                  地点名称
+                  <input id="placeName" type="text" placeholder="例如：京都鸭川" />
+                </label>
+                <label>
+                  位置
+                  <input id="placeRegion" type="hidden" />
+                  <div class="location-picker" aria-label="选择国家省市区县">
+                    <select id="countrySelect" aria-label="国家或地区"></select>
+                    <select id="provinceSelect" aria-label="省级地区"></select>
+                    <select id="citySelect" aria-label="城市"></select>
+                    <select id="areaSelect" aria-label="区县"></select>
+                  </div>
+                </label>
+                <div class="split">
+                  <label>
+                    纬度
+                    <input id="latitude" type="number" step="0.000001" placeholder="35.0116" />
+                  </label>
+                  <label>
+                    经度
+                    <input id="longitude" type="number" step="0.000001" placeholder="135.7681" />
+                  </label>
+                </div>
+                <label>
+                  拍摄日期
+                  <input id="takenAt" type="date" />
+                </label>
+                <label>
+                  我们的小故事
+                  <textarea id="memory" rows="4" placeholder="那天发生了什么？"></textarea>
+                </label>
+                <div class="actions">
+                  <button id="savePhoto" class="primary-button" type="submit">保存</button>
+                  <button id="clearAll" class="ghost-button danger" type="button">清空本次</button>
+                </div>
+              </form>
+            </section>
+      </aside>
+
+      <main class="workspace">
+            <section class="map-region" aria-label="旅行地图">
+              <div class="home-bar">
+                <header class="home-title">
+                  <p class="kicker">情侣旅行相册</p>
+                  <h1>侣途相册</h1>
+                </header>
+                <div class="map-toolbar" aria-label="地图工具">
+                  <button id="openDetail" class="tool-button add-photo-button" type="button" title="添加照片">
+                    <span aria-hidden="true">＋</span>
+                  </button>
+                </div>
+              </div>
+              <div class="map-stage">
+                <div id="map"></div>
+                <div class="map-zoom-controls" aria-label="地图缩放">
+                  <button id="zoomInMap" type="button" aria-label="放大地图"></button>
+                  <button id="zoomOutMap" type="button" aria-label="缩小地图"></button>
+                </div>
+                <div id="mapOverlay" class="map-overlay" aria-label="旅行地点标记"></div>
+                <div id="mapFallback" class="map-fallback" hidden>
+                  <div class="fallback-grid"></div>
+                  <p>地图资源加载失败，但照片地点仍可保存。</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="album-panel" aria-label="情侣相册">
+              <div class="album-head">
+                <div>
+                  <p class="kicker">时间线</p>
+                  <h2>我们的旅行足迹</h2>
+                </div>
+                <div class="view-switch" role="tablist" aria-label="相册视图">
+                  <button id="gridView" class="active" type="button">相册</button>
+                  <button id="placeView" type="button">地点</button>
+                </div>
+              </div>
+              <div id="emptyState" class="empty-state">
+                <strong>先放进第一张照片吧</strong>
+                <span>有 GPS 的照片会直接出现在地图上；没有 GPS 的照片也可以手动标记。</span>
+              </div>
+              <div id="gallery" class="gallery"></div>
+            </section>
+      </main>
+    </div>
+
+    <script src="https://unpkg.com/maplibre-gl@5.12.0/dist/maplibre-gl.js"></script>
+    <script src="./assets/china-locations.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

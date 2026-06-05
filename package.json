@@ -1,0 +1,55 @@
+{
+  "name": "travel-album-desktop",
+  "version": "0.1.0",
+  "description": "侣途相册桌面版",
+  "main": "electron/main.cjs",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win nsis portable --x64"
+  },
+  "build": {
+    "appId": "com.local.travelalbum",
+    "productName": "侣途相册",
+    "directories": {
+      "output": "dist/windows"
+    },
+    "files": [
+      "index.html",
+      "styles.css",
+      "app.js",
+      "electron/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "signAndEditExecutable": false,
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "侣途相册"
+    }
+  },
+  "devDependencies": {
+    "@develar/schema-utils": "^2.6.5",
+    "@electron/notarize": "^3.1.1",
+    "electron": "^39.2.6",
+    "electron-builder": "^26.0.12"
+  }
+}
