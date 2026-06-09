@@ -1,12 +1,12 @@
 {
   "name": "travel-album-desktop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "侣途相册桌面版",
   "main": "electron/main.cjs",
   "private": true,
   "scripts": {
     "start": "electron .",
-    "build:win": "electron-builder --win nsis portable --x64"
+    "build:win": "electron-builder --win nsis --x64"
   },
   "build": {
     "appId": "com.local.travelalbum",
@@ -26,12 +26,6 @@
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "portable",
           "arch": [
             "x64"
           ]

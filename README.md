@@ -20,13 +20,13 @@
 
 从 Releases 页面下载：
 
-- `侣途相册 Setup 0.1.0.exe`：安装版，适合日常使用。
+- `lutu-album-windows-setup-0.1.1.exe`：安装版，适合日常使用。
 
 ### macOS
 
 从 Releases 页面下载：
 
-- `侣途相册-mac.zip`
+- `lutu-album-macos-0.1.1.zip`
 
 解压后打开 `侣途相册.app` 即可使用。
 

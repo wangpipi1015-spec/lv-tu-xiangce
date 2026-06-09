@@ -20,6 +20,81 @@ const CHINESE_MAP_LABEL_FIELD = [
   "台湾省",
   ["coalesce", ["get", "name:zh-Hans"], ["get", "name:zh"], ["get", "name:zh-CN"], ""],
 ];
+const CHINA_STATE_LABEL_NAMES = [
+  "北京市",
+  "北京",
+  "天津市",
+  "天津",
+  "上海市",
+  "上海",
+  "重庆市",
+  "重庆",
+  "河北省",
+  "河北",
+  "山西省",
+  "山西",
+  "辽宁省",
+  "辽宁",
+  "吉林省",
+  "吉林",
+  "黑龙江省",
+  "黑龙江",
+  "江苏省",
+  "江苏",
+  "浙江省",
+  "浙江",
+  "安徽省",
+  "安徽",
+  "福建省",
+  "福建",
+  "江西省",
+  "江西",
+  "山东省",
+  "山东",
+  "河南省",
+  "河南",
+  "湖北省",
+  "湖北",
+  "湖南省",
+  "湖南",
+  "广东省",
+  "广东",
+  "海南省",
+  "海南",
+  "四川省",
+  "四川",
+  "贵州省",
+  "贵州",
+  "云南省",
+  "云南",
+  "陕西省",
+  "陕西",
+  "甘肃省",
+  "甘肃",
+  "青海省",
+  "青海",
+  "台湾省",
+  "台湾",
+  "內蒙古自治區",
+  "内蒙古自治区",
+  "内蒙古",
+  "廣西壯族自治區",
+  "广西壮族自治区",
+  "广西",
+  "西藏自治区",
+  "西藏",
+  "寧夏回族自治區",
+  "宁夏回族自治区",
+  "宁夏",
+  "新疆维吾尔自治区",
+  "新疆",
+  "香港特别行政区",
+  "香港",
+  "澳门特别行政区",
+  "澳门",
+];
+const CHINA_STATE_LABEL_FILTER = ["match", CHINESE_MAP_LABEL_FIELD, CHINA_STATE_LABEL_NAMES, true, false];
+const TAIWAN_PROVINCE_LABEL_FILTER = ["match", CHINESE_MAP_LABEL_FIELD, ["台湾省"], true, false];
 const CHINA_LABEL_AREA = {
   type: "MultiPolygon",
   coordinates: [
@@ -32,12 +107,14 @@ const CHINA_LABEL_AREA = {
         [82.6, 47.2],
         [85.7, 48.4],
         [87.8, 49.2],
-        [91.5, 47.9],
-        [95.3, 44.3],
+        [91.1, 47.7],
+        [96.4, 42.8],
         [100.2, 42.7],
         [105.8, 41.8],
         [111.5, 43.7],
-        [116.6, 49.8],
+        [115.8, 48.1],
+        [117.8, 49.6],
+        [120.7, 53.3],
         [121.4, 53.4],
         [126.2, 52.3],
         [132.7, 48.2],
@@ -88,7 +165,7 @@ const MAP_LABEL_LAYERS = [
     id: "label_state",
     minZoom: 3,
     maxZoom: 7.4,
-    filter: ["all", ["==", ["get", "class"], "state"], CHINA_LABEL_FILTER],
+    filter: ["all", ["==", ["get", "class"], "state"], CHINA_STATE_LABEL_FILTER],
   },
   {
     id: "label_city",
@@ -140,19 +217,37 @@ const COUNTRY_LABEL_LAYERS = [
     id: "label_country_1",
     minZoom: 1.8,
     maxZoom: 4.7,
-    filter: ["all", ["==", ["get", "class"], "country"], ["==", ["get", "rank"], 1], CHINA_LABEL_FILTER],
+    filter: [
+      "all",
+      ["==", ["get", "class"], "country"],
+      ["==", ["get", "rank"], 1],
+      ["!", TAIWAN_PROVINCE_LABEL_FILTER],
+      CHINA_LABEL_FILTER,
+    ],
   },
   {
     id: "label_country_2",
     minZoom: 1.8,
     maxZoom: 4.7,
-    filter: ["all", ["==", ["get", "class"], "country"], ["==", ["get", "rank"], 2], CHINA_LABEL_FILTER],
+    filter: [
+      "all",
+      ["==", ["get", "class"], "country"],
+      ["==", ["get", "rank"], 2],
+      ["!", TAIWAN_PROVINCE_LABEL_FILTER],
+      CHINA_LABEL_FILTER,
+    ],
   },
   {
     id: "label_country_3",
     minZoom: 2,
     maxZoom: 4.7,
-    filter: ["all", ["==", ["get", "class"], "country"], [">=", ["get", "rank"], 3], CHINA_LABEL_FILTER],
+    filter: [
+      "all",
+      ["==", ["get", "class"], "country"],
+      [">=", ["get", "rank"], 3],
+      ["!", TAIWAN_PROVINCE_LABEL_FILTER],
+      CHINA_LABEL_FILTER,
+    ],
   },
 ];
 const ADMIN_BOUNDARY_LAYERS = [
@@ -166,6 +261,7 @@ const ADMIN_BOUNDARY_LAYERS = [
       ["<=", ["get", "admin_level"], 4],
       ["!=", ["get", "maritime"], 1],
       ["!=", ["get", "disputed"], 1],
+      CHINA_LABEL_FILTER,
     ],
     paint: {
       "line-color": "#d86f94",
@@ -183,6 +279,7 @@ const ADMIN_BOUNDARY_LAYERS = [
       ["<=", ["get", "admin_level"], 6],
       ["!=", ["get", "maritime"], 1],
       ["!=", ["get", "disputed"], 1],
+      CHINA_LABEL_FILTER,
     ],
     paint: {
       "line-color": "#d86f94",
@@ -828,26 +925,70 @@ function applyChineseMapLabels() {
     state.map.setLayerZoomRange(layer.id, layer.minZoom, layer.maxZoom);
   }
 
-  if (state.map.getLayer("label_state")) {
-    state.map.setLayoutProperty("label_state", "text-font", ["Noto Sans Bold"]);
-    state.map.setLayoutProperty("label_state", "text-transform", "none");
-    state.map.setLayoutProperty("label_state", "text-letter-spacing", 0);
-    state.map.setLayoutProperty("label_state", "text-size", [
-      "interpolate",
-      ["linear"],
-      ["zoom"],
-      3,
-      15,
-      5,
-      18,
-      7,
-      22,
-    ]);
-    state.map.setPaintProperty("label_state", "text-color", "#154234");
-    state.map.setPaintProperty("label_state", "text-halo-color", "#fffdf8");
-    state.map.setPaintProperty("label_state", "text-halo-width", 1.8);
-    state.map.setPaintProperty("label_state", "text-halo-blur", 0.6);
+  addTaiwanProvinceLabel();
+  applyProvinceLabelStyle("label_state");
+  applyProvinceLabelStyle("travel-taiwan-province-label");
+}
+
+function addTaiwanProvinceLabel() {
+  if (!state.map?.getSource?.("openmaptiles")) return;
+
+  const layerId = "travel-taiwan-province-label";
+  const filter = ["all", ["==", ["get", "class"], "country"], TAIWAN_PROVINCE_LABEL_FILTER];
+  if (state.map.getLayer(layerId)) {
+    state.map.setFilter(layerId, filter);
+    state.map.setLayerZoomRange(layerId, 3, 7.4);
+    return;
   }
+
+  state.map.addLayer(
+    {
+      id: layerId,
+      type: "symbol",
+      source: "openmaptiles",
+      "source-layer": "place",
+      minzoom: 3,
+      maxzoom: 7.4,
+      filter,
+      layout: {
+        "text-field": "台湾省",
+        "text-font": ["Noto Sans Bold"],
+        "text-size": provinceLabelTextSize(),
+        "text-transform": "none",
+        "text-letter-spacing": 0,
+        "text-anchor": "center",
+        "text-allow-overlap": false,
+        "text-ignore-placement": false,
+      },
+      paint: provinceLabelPaint(),
+    },
+    firstExistingLayer(["label_city", "label_city_capital", "label_town"]),
+  );
+}
+
+function applyProvinceLabelStyle(layerId) {
+  if (!state.map.getLayer(layerId)) return;
+
+  state.map.setLayoutProperty(layerId, "text-font", ["Noto Sans Bold"]);
+  state.map.setLayoutProperty(layerId, "text-transform", "none");
+  state.map.setLayoutProperty(layerId, "text-letter-spacing", 0);
+  state.map.setLayoutProperty(layerId, "text-size", provinceLabelTextSize());
+  for (const [property, value] of Object.entries(provinceLabelPaint())) {
+    state.map.setPaintProperty(layerId, property, value);
+  }
+}
+
+function provinceLabelTextSize() {
+  return ["interpolate", ["linear"], ["zoom"], 3, 15, 5, 18, 7, 22];
+}
+
+function provinceLabelPaint() {
+  return {
+    "text-color": "#154234",
+    "text-halo-color": "#fffdf8",
+    "text-halo-width": 1.8,
+    "text-halo-blur": 0.6,
+  };
 }
 
 function hideUnneededRoadLayers() {
